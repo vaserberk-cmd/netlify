@@ -1,7 +1,7 @@
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, X-Mime, X-Name",
+  "Access-Control-Allow-Headers": "Content-Type, X-Mime, X-Name, X-Model",
 };
 
 function json(data, status = 200) {
@@ -84,6 +84,20 @@ export default async (request) => {
       return json(await r.json(), r.status);
     }
 
+    if (path === "/groq" && request.method === "POST") {
+      if (!groqKey) return json({ error: { message: "Добавьте переменную GROQ_API_KEY в настройки Netlify" } }, 500);
+      const payload = await request.json();
+      const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${groqKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      return json(await r.json(), r.status);
+    }
+
     if (path === "/whisper" && request.method === "POST") {
       if (!groqKey) return json({ error: { message: "Добавьте переменную GROQ_API_KEY в настройки Netlify" } }, 500);
       const mime = request.headers.get("X-Mime") || "audio/mpeg";
@@ -91,7 +105,7 @@ export default async (request) => {
       const buf = await request.arrayBuffer();
       const fd = new FormData();
       fd.append("file", new Blob([buf], { type: mime }), fname);
-      fd.append("model", "whisper-large-v3");
+      fd.append("model", request.headers.get("X-Model") || "whisper-large-v3");
       fd.append("language", "ru");
       fd.append("response_format", "verbose_json");
 
