@@ -93,7 +93,7 @@ details.pr pre{white-space:pre-wrap;font:13px/1.5 ui-monospace,Menlo,monospace;b
 
 <div class="view on" id="home"><div class="logo">АРХИВ · ИИ<small>ПРОЕКТ 2026</small></div>
 <div class="navr"><button class="pill g" id="tocat">Каталог (137)</button><button class="pill g" id="tometh">Методика и обзор ИИ</button><button class="pill" id="tolab">Лаборатория ИИ</button></div>
-<div id="stage"><div class="lab l">Типы документов</div><div class="lab r">Примеры из корпуса</div>
+<div id="stage"><div class="lab l">Типы документов</div><div class="lab r">Примеры из каталога</div>
 <div id="card"><div class="k" id="ck">Выберите тип</div><h2 id="ct">Что загрузим?</h2><p id="cd">Нажмите на плитку слева: фото, аудио или видео.</p>
 <div id="drop"><button class="pill" id="up" disabled>Загрузить файл</button><div class="h" id="ch">или перетащите файл сюда</div></div></div>
 <div class="grp" id="gl"></div><div class="grp" id="gr"></div>
@@ -103,7 +103,7 @@ details.pr pre{white-space:pre-wrap;font:13px/1.5 ui-monospace,Menlo,monospace;b
 <div class="res"><div class="pv" id="pv"></div><div id="rs"></div></div></div>
 <div class="view" id="lab"><div class="top"><button id="lback">← Назад</button><span class="b">Лаборатория</span><span class="nm">Сравнение нейросетей на одном файле</span></div><div class="lb">
 <div class="sec"><h3>1. Тип материала</h3><div class="seg" id="lseg"></div><input id="lname" placeholder="Ваше имя (эксперт)" style="margin-top:12px;padding:9px;border:1px solid #0003;font:13px system-ui;width:100%;max-width:320px"></div>
-<div class="sec"><h3>2. Файл</h3><input type="file" id="lf"><div class="row2" id="ldemo_btns"><button type="button" class="pill g" id="ldemo_pick">Загрузить пример из корпуса</button></div><div class="pv" id="lprev" style="position:static;box-shadow:none;padding:0;margin-top:12px;max-width:360px"></div></div>
+<div class="sec"><h3>2. Файл</h3><input type="file" id="lf"><div class="row2" id="ldemo_btns"><button type="button" class="pill g" id="ldemo_pick">Загрузить пример из каталога</button></div><div class="pv" id="lprev" style="position:static;box-shadow:none;padding:0;margin-top:12px;max-width:360px"></div></div>
 <div class="sec"><h3>3. Нейросети для сравнения</h3><label style="display:flex;gap:8px;align-items:center;font:600 13px system-ui;margin-bottom:12px;cursor:pointer"><input type="checkbox" id="ldemo" checked> Демо-режим (показать сравнение без облачных API-ключей)</label><div class="eng" id="leng"></div><div class="mut" id="lnote"></div></div>
 <div class="sec" id="ltr"><h3>4. Расшифровка-основа для моделей без слуха</h3><textarea id="ltx" rows="5" placeholder="Сюда попадёт расшифровка аудио или видео. Получите её через Gemini или Whisper v3."></textarea><div class="row2"><button class="pill g" id="ltg">Расшифровать через Gemini</button></div></div>
 <div class="sec"><h3>5. Промпт для всех моделей</h3><textarea id="lp" rows="7"></textarea><div class="row2"><button class="pill" id="lrun">Запустить сравнение</button></div></div>
@@ -259,14 +259,39 @@ if(x.m==="photo"){pv.appendChild(bg);if(x.g){var im=h("img","ph2");im.referrerPo
 else if(x.m==="audio"){pv.appendChild(bg);if(x.f){var a=h("audio");a.controls=true;a.style.marginTop="12px";a.src="https://drive.google.com/uc?export=download&id="+x.f;a.onerror=function(){a.remove();bg.remove();var fr=h("iframe");fr.src="https://drive.google.com/file/d/"+x.f+"/preview";fr.allow="autoplay";fr.style.cssText="width:100%;height:160px;border:0;background:#000";pv.insertBefore(fr,pv.querySelector(".a"))};pv.appendChild(a)}}
 else if(x.m==="video"){if(x.f){var v=h("video");v.controls=true;v.playsInline=true;v.poster=th(x.f,800);v.src="https://drive.google.com/uc?export=download&id="+x.f;v.onerror=function(){v.remove();var fr=h("iframe");fr.src="https://drive.google.com/file/d/"+x.f+"/preview";fr.allow="autoplay";fr.style.cssText="width:100%;height:260px;border:0;background:#000";pv.insertBefore(fr,pv.querySelector(".a"))};pv.appendChild(v)}else{pv.appendChild(bg)}}
 view("result");show(x.d,x.m,"Тип документа: "+M[x.m].n+". Данные: каталог проекта и результаты прогона.");$("rs").insertBefore(fullCard(x),$("rs").querySelector("details.pr"))}
+async function goFallback(f,k,say){
+if(!PROXY)throw new Error("Gemini перегружен, а сервер-прокси не подключён.");
+if(k==="photo"){
+say("Gemini занят, подключаю резервную модель Qwen 3.8…");
+var qb=await imgB64(f),rq=await fetch(PROXY+"/groq",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"qwen/qwen3.8-27b",temperature:0.2,max_completion_tokens:4096,messages:[{role:"user",content:[{type:"text",text:M[k].p+S+M[k].s+SYS},{type:"image_url",image_url:{url:"data:image/jpeg;base64,"+qb}}]}]})}),jq=await rq.json();
+if(jq.error)throw new Error(jq.error.message||JSON.stringify(jq.error));
+var tx=jq.choices&&jq.choices[0]&&jq.choices[0].message?jq.choices[0].message.content:"";
+return{data:parseJ(tx)||{"Ответ ИИ":tx||"Пустой ответ"},note:"Полный разбор создан резервной моделью Qwen 3.8 (так как бесплатный лимит Gemini сейчас занят). Проверьте фактические сведения по оригиналу."};
+}
+say("Gemini занят, расшифровываю речь через Whisper v3…");
+var rw=await fetch(PROXY+"/whisper",{method:"POST",headers:{"X-Mime":mime(f),"X-Name":encodeURIComponent(f.name),"X-Model":"whisper-large-v3"},body:f}),jw=await rw.json();
+if(jw.error)throw new Error(jw.error.message||JSON.stringify(jw.error));
+var segs=(jw.segments||[]).map(function(s){var sec=Math.floor(s.start||0),mm=String(Math.floor(sec/60)).padStart(2,"0"),ss=String(sec%60).padStart(2,"0");return"["+mm+":"+ss+"] "+(s.text||"").trim()}).join("\n")||(jw.text||"");
+if(!segs)throw new Error("Не удалось распознать речь.");
+say("Формирую архивную карточку через Qwen 3.8…");
+var rq2=await fetch(PROXY+"/groq",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"qwen/qwen3.8-27b",temperature:0.2,max_completion_tokens:4096,messages:[{role:"user",content:M[k].p+"\n\nРАСШИФРОВКА:\n"+segs+S+M[k].s+SYS}]})}),jq2=await rq2.json();
+if(jq2.error)throw new Error(jq2.error.message||JSON.stringify(jq2.error));
+var tx2=jq2.choices&&jq2.choices[0]&&jq2.choices[0].message?jq2.choices[0].message.content:"";
+return{data:parseJ(tx2)||{"Расшифровка":segs,"Ответ ИИ":tx2},note:"Полный разбор создан связкой Whisper v3 + Qwen 3.8 (так как бесплатный лимит Gemini сейчас занят). Проверьте транскрипцию по оригиналу."};
+}
 async function go(f){if(!f)return;var k=mode,key=gkey();
 if(!key){$("k").focus();$("k").style.outline="2px solid #d7341f";return}
 try{localStorage.setItem("gk",key)}catch(e){}
 head(k,f.name);view("result");prev(f,k);var say=function(t){$("rs").innerHTML="";$("rs").appendChild(h("div","sec ld",t))};
-try{say("Подготовка…");var part=f.size>14*1048576||(k==="video"&&f.size>8*1048576)?await up(f,key,say):{inlineData:{mimeType:mime(f),data:await b64(f)}};say("ИИ анализирует… для аудио и видео это занимает до пары минут");
-var j=await genCall($("m").value.trim(),key,{contents:[{parts:[part,{text:M[k].p+S+M[k].s}]}],safetySettings:SAF,generationConfig:{temperature:.2,maxOutputTokens:32000,responseMimeType:"application/json"}});if(j.error)throw new Error(j.error.message);var c=j.candidates&&j.candidates[0],tx=c&&c.content&&c.content.parts?c.content.parts.map(function(p){return p.text||""}).join(""):"";
-var data=parseJ(tx)||{"Ответ ИИ":tx||("Пустой ответ (причина: "+(c&&c.finishReason||"неизвестно")+")")};
-show(data,k,"Полный разбор создан ИИ по исходному файлу. Проверьте транскрипцию и фактические сведения по оригиналу.")}catch(e){var rs=$("rs");rs.innerHTML="";rs.appendChild(h("div","err","Ошибка: "+(e.message||e)+"\n\nСмените модель внизу главной страницы (например, gemini-3.8-flash) или подождите минуту."))}}
+try{say("Подготовка…");var data=null,note="Полный разбор создан ИИ по исходному файлу. Проверьте транскрипцию и фактические сведения по оригиналу.";
+try{var part=f.size>14*1048576||(k==="video"&&f.size>8*1048576)?await up(f,key,say):{inlineData:{mimeType:mime(f),data:await b64(f)}};say("ИИ анализирует… для аудио и видео это занимает до пары минут");
+var j=await genCall($("m").value.trim(),key,{contents:[{parts:[part,{text:M[k].p+S+M[k].s}]}],safetySettings:SAF,generationConfig:{temperature:.2,maxOutputTokens:32000,responseMimeType:"application/json"}});
+if(j.error)throw new Error(j.error.message);
+var c=j.candidates&&j.candidates[0],tx=c&&c.content&&c.content.parts?c.content.parts.map(function(p){return p.text||""}).join(""):"";
+if(!tx)throw new Error("Пустой ответ Gemini");
+data=parseJ(tx)||{"Ответ ИИ":tx};
+}catch(ge){if(!PROXY)throw ge;var fb=await goFallback(f,k,say);data=fb.data;note=fb.note}
+show(data,k,note)}catch(e){var rs=$("rs");rs.innerHTML="";rs.appendChild(h("div","err","Ошибка: "+(e.message||e)+"\n\nПодождите минуту и попробуйте снова или откройте Лабораторию ИИ."))}}
 
 /* ===== Лаборатория ===== */
 var LU=0;function lg(n){var x=LG[n]||"";return n==="Gemini"?x.replace(/gg/g,"gg"+(++LU)):x}
