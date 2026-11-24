@@ -2,7 +2,7 @@
 <html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Архив + ИИ · Проект 2026</title>
-<style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Sofia+Sans+Extra+Condensed:wght@800&display=swap" media="print" onload="this.media='all'"><style>
 :root{--ink:#171614;--paper:#f6f1e7;--paper2:#ece5d6;--soft:#5d574d;--ac:#d7341f;--lab:#5d574d}
 *{box-sizing:border-box}html,body{margin:0;height:100%}
 body{background:var(--paper);color:var(--ink);font:16px/1.55 Georgia,serif;overflow-x:hidden;transition:background .5s}
@@ -20,10 +20,11 @@ body[data-mode=photo] #bg .bp,body[data-mode=audio] #bg .ba,body[data-mode=video
 @keyframes fs{to{background-position-y:44px,44px}}
 .bf video,.bf img{width:100%;height:100%;object-fit:cover;filter:blur(16px) brightness(.45);transform:scale(1.1)}
 .view{position:relative;z-index:1;display:none;min-height:100vh}.view.on{display:block}
-.logo{position:absolute;top:22px;left:0;right:0;text-align:center;font:800 26px system-ui;letter-spacing:.12em;color:var(--ink);transition:color .5s}
+.topbar{position:relative;z-index:5;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:18px 22px 0}
+.logo{position:static;grid-column:2;text-align:center;font:800 26px system-ui;letter-spacing:.12em;color:var(--ink);transition:color .5s;white-space:nowrap}
 .logo small{display:block;font:600 11px system-ui;letter-spacing:.2em;color:var(--ac)}
 body[data-mode=audio] .logo,body[data-mode=video] .logo{color:#f6f1e7}
-#stage{position:relative;height:100vh;min-height:680px}
+#stage{position:relative;height:calc(100vh - 76px);min-height:620px}
 .lab{position:absolute;top:50%;font:600 13px system-ui;letter-spacing:.3em;color:var(--lab);text-transform:uppercase;writing-mode:vertical-rl;transition:color .5s}
 .lab.l{left:22px;transform:translateY(-50%) rotate(180deg)}.lab.r{right:22px;transform:translateY(-50%)}
 .tile{position:absolute;border:5px solid #fff;box-shadow:0 6px 18px #0004;background:var(--ink);color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;font:700 11px system-ui;text-align:center;transition:transform .25s,box-shadow .25s;padding:3px;border-radius:2px}
@@ -45,9 +46,9 @@ a.pill{text-decoration:none;display:inline-block}.sec .pill{padding:10px 16px;fo
 .sc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;font:12px system-ui;color:var(--soft)}.sc select,.rc textarea{width:100%;padding:6px;border:1px solid #0003;font:13px system-ui}.rc textarea{margin-top:8px;min-height:60px}
 table.sm{width:100%;border-collapse:collapse;font:14px system-ui}.sm th,.sm td{padding:8px 10px;border-bottom:1px solid var(--paper2);text-align:left}.sm th{font:700 11px system-ui;letter-spacing:.1em;text-transform:uppercase;color:var(--ac)}.sm tr.best td{background:#e6efe0;font-weight:700}
 .hi{display:block;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--paper2);padding:9px 2px;font:13px system-ui;cursor:pointer}.hi:hover{color:var(--ac)}.mut{font:12.5px/1.45 system-ui;color:var(--soft);margin-top:8px}
-.navr{position:absolute;top:18px;right:22px;z-index:3;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.navr .pill{padding:9px 14px;font-size:11px}
-@media(max-width:860px){.navr{position:static;justify-content:center;margin:64px auto 0;padding:0 12px}.logo{top:14px}}
+.navr{position:static;grid-column:3;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.navr .pill{padding:9px 14px;font-size:11px;white-space:nowrap}
+@media(max-width:1180px){.topbar{display:flex;flex-direction:column;align-items:center;padding:14px 16px 6px}.navr{justify-content:center}#stage{height:auto;min-height:calc(100vh - 116px);padding-top:14px}}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:14px}
 .kpi{background:#faf8f2;border:1px solid var(--paper2);padding:12px 14px;text-align:center}.kpi b{display:block;font:800 24px system-ui;color:var(--ac)}.kpi span{font:600 11px system-ui;color:var(--soft);text-transform:uppercase;letter-spacing:.08em}
 .fbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}.fbar input,.fbar select{padding:8px 10px;border:1px solid #0003;font:13px system-ui;background:#fff}
@@ -88,11 +89,175 @@ table.sm{width:100%;border-collapse:collapse;font:14px system-ui}.sm th,.sm td{p
 .err{background:#fff0ec;border-left:4px solid var(--ac);padding:16px;font:14px system-ui;white-space:pre-wrap}
 details.pr{background:#fffdf8;padding:14px 22px;box-shadow:0 4px 16px #0003}details.pr summary{font:700 12px system-ui;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;color:var(--ac)}
 details.pr pre{white-space:pre-wrap;font:13px/1.5 ui-monospace,Menlo,monospace;background:var(--paper);padding:12px;margin:10px 0 0}
+
+/* === ПАПКИ КАТАЛОГА (СТИЛЬ CATALOG-SITE) === */
+#folders{--ink:#171614;--paper:#f6f1e7;--paper-2:#ece5d6;--text:#1b1917;--soft:#5d574d;--muted:#8f897e;--line:rgba(255,255,255,.14);--rule:rgba(27,25,23,.2);
+  --f-d:'Sofia Sans Extra Condensed','Arial Narrow','Roboto Condensed',Impact,sans-serif;
+  --f-s:'Old Standard TT','Times New Roman',Georgia,serif;
+  --f-m:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  --tab-h:44px;--c:#d7341f;--on:#fffaf2;
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .25 0 0 0 0 .2 0 0 0 0 .12 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.2'/%3E%3C/svg%3E");
+  --shadow:0 1px 1px rgba(0,0,0,.18),0 10px 28px -10px rgba(0,0,0,.45);
+  background:#171614;color:#fdfaf3;min-height:100vh;padding-bottom:48px}
+#folders .top{background:rgba(23,22,20,.94);color:#fdfaf3;border-bottom:1px solid rgba(255,255,255,.14)}
+#folders .top button{color:#fdfaf3;border-color:rgba(255,255,255,.25)}
+#folders .top .nm{color:#cfc9bd}
+.fcab-head{max-width:1234px;margin:28px auto 0;padding:0 24px;text-align:center}
+.fcab-title{font:800 clamp(44px,7vw,92px)/.9 var(--f-d);text-transform:uppercase;letter-spacing:.01em;margin:0;color:#fdfaf3}
+.fcab-sub{margin:10px auto 0;max-width:680px;font:400 clamp(16px,1.4vw,20px)/1.35 var(--f-s);color:#cfc9bd}
+.cab{width:min(1234px,100% - 32px);margin:36px auto 0;display:flex;flex-direction:column}
+.folder{position:relative;pointer-events:none}
+.folder .band{pointer-events:auto}
+.folder + .folder{margin-top:calc(var(--tab-h) * -1 - 10px)}
+.tabs{position:relative;z-index:2;display:flex;align-items:flex-end;gap:0;padding:10px 10px 0;height:calc(var(--tab-h) + 10px);pointer-events:none;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{position:relative;flex:none;display:inline-flex;align-items:stretch;height:var(--tab-h);color:var(--on);text-decoration:none;font:400 clamp(17px,1.5vw,23px)/1 var(--f-s);letter-spacing:-.005em;pointer-events:auto;cursor:pointer;border:0;background:none;padding:0;transition:translate .24s cubic-bezier(.2,.8,.2,1)}
+.tab span{display:flex;align-items:center;background:var(--c);padding:0 10px 3px;margin:0 -1px;white-space:nowrap}
+.tab + .tab{margin-left:-4px}
+.fl{flex:none;width:36px;height:100%;fill:var(--c)}
+.fl-r{transform:scaleX(-1)}
+.cab .tab::after{content:"";position:absolute;left:8px;right:8px;top:100%;height:10px;background:var(--c)}
+.cab .tab:hover{translate:0 -8px}
+.band{position:relative;z-index:1;background:var(--c);color:var(--on);border-radius:4px 4px 0 0}
+.folder:last-child .band{border-radius:4px}
+.band-btn{display:flex;align-items:center;justify-content:flex-end;gap:10px;width:100%;height:56px;padding:0 28px;font:400 12.5px/1 var(--f-m);letter-spacing:.01em;background:none;border:0;color:inherit;cursor:pointer}
+.band-btn span{border-bottom:1px solid transparent}
+.band-btn:hover span{border-bottom-color:currentColor}
+.chev{width:12px;height:12px;rotate:90deg;transition:rotate .3s}
+.is-open .chev{rotate:0deg}
+.band-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(.3,.7,.2,1)}
+.is-open .band-body{grid-template-rows:1fr}
+.band-in{overflow:hidden;min-height:0;visibility:hidden;transition:visibility 0s .4s}
+.is-open .band-in{visibility:visible;transition-delay:0s}
+.band-desc{max-width:680px;padding:8px 36px 0;font:400 13px/1.45 var(--f-m)}
+.band-stats{padding:14px 36px 0;font:400 12.5px/1.4 var(--f-m);opacity:.85}
+.band-in::after{content:"";display:block;height:calc(var(--tab-h) + 46px)}
+.folder:last-child .band-in::after{height:64px}
+.dos{max-width:1280px;margin:0 auto;padding:24px 20px 60px}
+.dos-head{padding:12px 4px 28px}
+.dos-k{font:400 12.5px/1.4 var(--f-m);color:#cfc9bd;margin-bottom:10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.dos-k button{color:#fdfaf3;background:none;border:0;border-bottom:1px solid rgba(255,255,255,.35);cursor:pointer;font:inherit;padding:0}
+.dos-k button:hover{border-color:#fff}
+.dos-title{font:800 clamp(48px,7.8vw,116px)/.88 var(--f-d);text-transform:uppercase;letter-spacing:-.004em;margin:0;color:#fdfaf3}
+.dos-wrap{display:grid;grid-template-columns:minmax(0,1fr)}
+.dos-folder{min-width:0}
+.dos-tabs{display:flex;align-items:flex-end;gap:4px;height:var(--tab-h);padding:0 8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.dos-tabs .tab{font-size:19px}
+.dos-body{background:var(--c);color:var(--on);padding:clamp(16px,2.4vw,34px) clamp(14px,4vw,56px) 72px;border-radius:4px}
+.sheet{position:relative;background:var(--paper) var(--grain);color:var(--text);border-radius:3px;box-shadow:var(--shadow);padding:clamp(28px,4vw,56px) clamp(18px,5vw,64px) clamp(32px,4vw,56px) clamp(50px,8vw,108px)}
+.sheet::before{content:"";position:absolute;left:clamp(12px,2vw,26px);top:56px;bottom:32px;width:20px;background:radial-gradient(circle at 50% 10px,var(--c) 0 9.6px,transparent 10.4px) 0 0/20px 166px repeat-y}
+.sheet::after{content:"";position:absolute;left:clamp(38px,5vw,68px);top:0;bottom:0;width:1px;background:var(--rule)}
+.sheet--lead{display:grid;grid-template-columns:minmax(0,1fr);gap:32px}
+@media(min-width:860px){.sheet--lead{grid-template-columns:clamp(200px,24%,252px) minmax(0,1fr);gap:clamp(32px,5vw,70px);padding-left:clamp(80px,7vw,96px)}}
+.portrait{position:relative;max-width:252px}
+.portrait .print{rotate:-1.6deg;margin-top:-8px}
+.portrait .print img{aspect-ratio:4/5;object-fit:cover;object-position:50% 20%;width:100%}
+.print{position:relative;background:#fff;padding:9px;box-shadow:var(--shadow);width:fit-content;max-width:100%}
+.print .zoom{display:block;cursor:zoom-in;position:relative;border:0;background:none;padding:0}
+.print img{background:#d9d2c3;min-height:100px;min-width:100px;max-width:100%;display:block}
+.clip{position:absolute;right:16px;top:-26px;width:24px;height:84px;color:#9a968e;filter:drop-shadow(0 1px 0 rgba(255,255,255,.6))}
+.plabel{aspect-ratio:4/3;display:flex;flex-direction:column;justify-content:space-between;padding:14px 16px;border:1.5px solid var(--text);outline:1.5px solid var(--text);outline-offset:-6px;rotate:-1.6deg;background:var(--paper)}
+.plabel span{font:400 11.5px/1.2 var(--f-m);text-transform:uppercase;letter-spacing:.08em}
+.plabel b{font:800 clamp(64px,7vw,96px)/.8 var(--f-d);color:var(--c)}
+.facts{margin-top:24px;display:grid;gap:14px;font:400 13.5px/1.45 var(--f-m)}
+.facts dt{font-weight:600}
+.lead{font:400 clamp(20px,1.8vw,25px)/1.28 var(--f-s);max-width:26em;margin:0}
+.sheet-h{font:600 12px/1 var(--f-m);text-transform:uppercase;letter-spacing:.1em;margin:28px 0 12px;clear:both}
+.inv{border-top:1.5px solid var(--text);list-style:none;margin:0;padding:0}
+.inv li{border-bottom:1px solid var(--rule)}
+.inv button{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px 16px;align-items:baseline;width:100%;padding:11px 2px;font:400 13.5px/1.4 var(--f-m);background:none;border:0;color:inherit;cursor:pointer;text-align:left;transition:background .15s,padding .2s}
+.inv button:hover{background:rgba(27,25,23,.06);padding-left:8px}
+.inv-n{min-width:36px;color:var(--soft)}
+.inv-t b{font-weight:600}
+.inv-d{color:var(--soft);text-align:right}
+.doc{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:clamp(12px,2vw,24px);align-items:start;margin-top:clamp(54px,7vw,96px)}
+.doc-media{grid-column:1/-1;position:relative;z-index:1}
+.note{grid-column:1/-1;position:relative;z-index:2;padding:clamp(20px,2.6vw,36px) clamp(18px,2.8vw,40px);color:var(--text);box-shadow:var(--shadow);margin:-12px 8px 0 -4px;rotate:.8deg}
+.note--y{background:#f6d961}
+.note--p{background:#f1a9b7}
+.note--b{background:#a4bdf3}
+.dos[data-c="yellow"] .note--y{background:#fbf6ea}
+.note-k{font:400 12.5px/1.35 var(--f-m);margin:0 0 12px}
+.note-k b{display:inline-block;font-weight:600;margin-right:8px;padding:1px 6px;border:1.2px solid currentColor;border-radius:2px}
+.note-t{font:800 clamp(28px,3vw,42px)/.95 var(--f-d);text-transform:uppercase;letter-spacing:.004em;margin:0;overflow-wrap:anywhere}
+.note-d{margin:14px 0 0;font:400 14px/1.5 var(--f-m);max-width:48ch}
+.card{grid-column:1/-1;position:relative;z-index:1;background:var(--paper) var(--grain);color:var(--text);padding:28px clamp(16px,2.2vw,28px) 22px;box-shadow:var(--shadow);margin-top:-10px;border-radius:2px}
+.card-h{display:flex;justify-content:space-between;gap:16px;padding-bottom:9px;border-bottom:3px double #c7402c;font:600 11px/1.2 var(--f-m);text-transform:uppercase;letter-spacing:.1em;color:#a8301e;margin:0 0 8px}
+.card dl{margin:0}
+.row{display:grid;grid-template-columns:minmax(0,1fr);gap:2px 18px;padding:8px 0;border-bottom:1px solid rgba(53,84,124,.22)}
+.row dt{font:400 11px/1.45 var(--f-m);text-transform:uppercase;letter-spacing:.06em;color:var(--soft);padding-top:2px}
+.row dd{font:400 13.5px/1.48 var(--f-m);margin:0;overflow-wrap:anywhere}
+.row--n dd{font:italic 400 16.5px/1.36 var(--f-s)}
+@media(min-width:520px){.row{grid-template-columns:minmax(0,34%) minmax(0,1fr)}}
+.card-links{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:18px 0 0}
+.fbtn{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:8px 15px;border-radius:10px;font:600 12.5px/1.2 var(--f-m);text-decoration:none;background:#f3c31b;color:#17150f;border:0;cursor:pointer;transition:translate .15s,box-shadow .15s}
+.fbtn--ink{background:var(--text);color:var(--paper)}
+.fbtn--del{background:transparent;color:#a8301e;border:1px solid rgba(168,48,30,.35)}
+.fbtn:hover{translate:0 -2px;box-shadow:0 4px 0 rgba(0,0,0,.22)}
+@media(min-width:900px){
+  .doc-media{grid-column:1/span 5;grid-row:1/span 2}
+  .note{grid-column:6/span 7;grid-row:1;margin:36px 0 0 -64px}
+  .card{grid-column:6/span 7;grid-row:2;margin:-14px 0 0 0;rotate:-.35deg}
+  .doc--flip .doc-media{grid-column:8/span 5}
+  .doc--flip .note{grid-column:1/span 7;margin:36px -64px 0 0;rotate:-.8deg}
+  .doc--audio .note{margin-left:-30px}
+  .doc--audio.doc--flip .note{margin-right:-30px}
+  .doc--flip .card{grid-column:1/span 7;rotate:.35deg}
+  .doc--video .doc-media{grid-column:1/span 8;grid-row:1}
+  .doc--video .note{grid-column:8/span 5;grid-row:1;margin:48px 0 0 -80px}
+  .doc--video .card{grid-column:3/span 10;grid-row:2;margin-top:28px}
+  .doc--video.doc--flip .doc-media{grid-column:5/span 8}
+  .doc--video.doc--flip .note{grid-column:1/span 5;margin:48px -80px 0 0}
+  .doc--video.doc--flip .card{grid-column:1/span 10}
+  .doc--video .card dl{columns:2;column-gap:32px}
+  .doc--video .card .row{break-inside:avoid}
+}
+.doc--photo .print{rotate:-1.4deg;margin:0 auto}
+.doc--photo .print img{max-height:min(74vh,620px);width:auto}
+.doc--flip.doc--photo .print{rotate:1.4deg}
+.reel{position:relative;max-width:440px;margin:0 auto}
+.reel-svg{width:100%;height:auto;filter:drop-shadow(0 14px 22px rgba(0,0,0,.4));transform-origin:50% 50%;display:block}
+.reel.is-on .reel-svg{animation:fspin 5.5s linear infinite}
+@keyframes fspin{to{transform:rotate(360deg)}}
+.reel-ui{position:absolute;left:50%;bottom:-16px;translate:-50% 0;width:min(100%,350px);background:#c7402c;color:#fffaf2;padding:14px 16px;box-shadow:var(--shadow);rotate:2deg;border-radius:2px}
+.pl{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:6px 14px}
+.pl-btn{grid-row:1/span 2;width:46px;height:46px;border-radius:50%;border:1.5px solid currentColor;background:none;color:inherit;cursor:pointer;display:grid;place-items:center;transition:background .15s,color .15s}
+.pl-btn:hover{background:currentColor;color:#c7402c}
+.pl-btn svg{width:22px;height:22px;grid-area:1/1}
+.pl .ic-pause,.pl.is-on .ic-play{display:none}
+.pl.is-on .ic-pause{display:block}
+.pl-bar{height:18px;display:flex;align-items:center;cursor:pointer;position:relative}
+.pl-bar::before{content:"";position:absolute;inset:8px 0;background:currentColor;opacity:.3}
+.pl-bar i{position:relative;display:block;height:2px;width:0;background:currentColor}
+.pl-bar i::after{content:"";position:absolute;right:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:currentColor}
+.pl-time{font:400 12px/1 var(--f-m);font-variant-numeric:tabular-nums}
+.film{position:relative;background:#0e0d0c;padding:26px 0;box-shadow:var(--shadow);rotate:-.7deg}
+.doc--flip .film{rotate:.7deg}
+.film::before,.film::after{content:"";position:absolute;left:0;right:0;height:26px;background:linear-gradient(90deg,transparent 0 9px,#e9e2d2 9px 23px,transparent 23px) 0 50%/32px 12px repeat-x;opacity:.9}
+.film::before{top:0}.film::after{bottom:0}
+.film-in{position:relative;aspect-ratio:16/9;background:#000;overflow:hidden}
+.film-in > *{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:contain}
+.mount{position:relative;display:grid;place-items:center;min-height:260px;padding:36px 24px;background:var(--paper-2) var(--grain);color:var(--text);box-shadow:var(--shadow);rotate:-1.2deg}
+.cn{position:absolute;width:30px;height:30px;background:var(--text)}
+.cn.tl{left:12px;top:12px;clip-path:polygon(0 0,100% 0,0 100%)}
+.cn.tr{right:12px;top:12px;clip-path:polygon(0 0,100% 0,100% 100%)}
+.cn.bl{left:12px;bottom:12px;clip-path:polygon(0 0,0 100%,100% 100%)}
+.cn.br{right:12px;bottom:12px;clip-path:polygon(100% 0,0 100%,100% 100%)}
+.mount-in{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;max-width:300px}
+.mount-k{font:600 11.5px/1.4 var(--f-m);text-transform:uppercase;letter-spacing:.09em}
+.mount-code{font:400 18px/1.2 var(--f-s);overflow-wrap:anywhere}
+.lb-dlg{border:0;padding:0;background:rgba(16,15,13,.92);color:#fdfaf3;max-width:94vw;max-height:94vh;margin:auto;border-radius:6px;overflow:auto}
+.lb-dlg::backdrop{background:rgba(0,0,0,.8)}
+.lb-dlg figure{margin:0;padding:24px;display:flex;flex-direction:column;align-items:center;gap:14px}
+.lb-dlg img{max-width:86vw;max-height:78vh;object-fit:contain;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+.lb-x{position:sticky;top:10px;align-self:flex-end;margin:10px 14px 0 0;background:#f3c31b;color:#17150f;border:0;padding:7px 12px;border-radius:99px;font:600 12px var(--f-m);cursor:pointer}
+.savebox{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px;width:100%}
+.savebox input{flex:1 1 180px;padding:8px 11px;border:1px solid #d5cebe;background:#fff;font:12.5px system-ui;color:var(--ink);border-radius:4px}
 </style></head><body>
 <div id="bg"><div class="bp"></div><div class="ba"></div><div class="bv"></div><div class="bf" id="bf"></div></div>
 
-<div class="view on" id="home"><div class="logo">АРХИВ · ИИ<small>ПРОЕКТ 2026</small></div>
-<div class="navr"><button class="pill g" id="tocat">Каталог (163)</button><button class="pill g" id="tometh">Методика и обзор ИИ</button><button class="pill" id="tolab">Лаборатория ИИ</button></div>
+<div class="view on" id="home"><div class="topbar"><div class="logo">АРХИВ · ИИ<small>ПРОЕКТ 2026</small></div>
+<div class="navr"><button class="pill g" id="tofold">Папки персон</button><button class="pill g" id="tocat">Каталог (163)</button><button class="pill g" id="tometh">Методика и обзор ИИ</button><button class="pill" id="tolab">Лаборатория ИИ</button></div></div>
 <div id="stage"><div class="lab l">Типы документов</div><div class="lab r">Примеры из каталога</div>
 <div id="card"><div class="k" id="ck">Выберите тип</div><h2 id="ct">Что загрузим?</h2><p id="cd">Нажмите на плитку слева: фото, аудио или видео.</p>
 <div id="drop"><button class="pill" id="up" disabled>Загрузить файл</button><div class="h" id="ch">или перетащите файл сюда</div></div></div>
@@ -110,8 +275,13 @@ details.pr pre{white-space:pre-wrap;font:13px/1.5 ui-monospace,Menlo,monospace;b
 <div id="lres"></div><div id="lsum"></div>
 <div class="sec" style="margin-top:14px"><h3>История экспериментов</h3><div id="lh"></div></div></div></div>
 
+
+<div class="view" id="folders">
+  <div class="top"><button id="fback">← Назад</button><span class="b" id="fbrand">Папки каталога</span><span class="nm" id="fname">Карточки персон и сохранённые материалы ИИ</span></div>
+  <div id="fapp"></div>
+</div>
 <div class="view" id="catalog"><div class="top"><button id="cback">← Назад</button><span class="b">Каталог</span><span class="nm">Экспериментальный корпус аудиовизуальных документов (163 ед.)</span></div><div class="lb">
-<div class="sec"><h3>Сводка корпуса</h3><div class="kpis" id="ckpis"></div><div class="fbar"><div class="seg" id="cseg"></div><input id="cq" placeholder="Поиск по персоне, описанию, архиву или шифру…"><select id="csrc"><option value="">Все части корпуса</option></select><button class="pill g" id="ccsv">Скачать CSV</button></div><div class="mut" id="ccnt"></div></div>
+<div class="sec"><h3>Сводка корпуса</h3><div class="kpis" id="ckpis"></div><div class="fbar"><div class="seg" id="cseg"></div><input id="cq" placeholder="Поиск по персоне, описанию, архиву или шифру…"><select id="csrc"><option value="">Все части корпуса</option></select><button class="pill" id="c2fold">Открыть папки персон</button><button class="pill g" id="ccsv">Скачать CSV</button></div><div class="mut" id="ccnt"></div></div>
 <div class="sec" style="padding:12px 16px;overflow-x:auto"><table class="sm" id="ctbl"></table></div>
 </div></div>
 
@@ -215,7 +385,8 @@ else{var s=await fetch(url+"/upload/v1beta/files?key="+k,{method:"POST",headers:
 var u=s.headers.get("x-goog-upload-url");if(!u)throw new Error("Не удалось начать загрузку файла");var r=await fetch(u,{method:"POST",headers:{"X-Goog-Upload-Offset":"0","X-Goog-Upload-Command":"upload, finalize"},body:f});j=(await r.json()).file}
 for(var i=0;i<60&&j.state==="PROCESSING";i++){say("Gemini обрабатывает файл…");await new Promise(function(z){setTimeout(z,3000)});j=await(await fetch(PROXY?PROXY+"/file?name="+encodeURIComponent(j.name):url+"/v1beta/"+j.name+"?key="+k)).json()}
 if(j.state!=="ACTIVE")throw new Error("Файл не обработан: "+j.state);return{fileData:{mimeType:mime(f),fileUri:j.uri}}}
-function prev(f,k){var u=URL.createObjectURL(f),pv=$("pv");pv.innerHTML="";
+var LAST_UPLOADED_FILE=null,LAST_UPLOADED_KIND="";
+function prev(f,k){LAST_UPLOADED_FILE=f;LAST_UPLOADED_KIND=k;var u=URL.createObjectURL(f),pv=$("pv");pv.innerHTML="";
 if(k==="photo"){var i=h("img");i.src=u;pv.appendChild(i);$("bf").innerHTML='<img src="'+u+'" alt="">';document.body.classList.add("hasf")}
 else if(k==="video"){var v=h("video");v.src=u;v.controls=true;pv.appendChild(v);$("bf").innerHTML='<video src="'+u+'" autoplay muted loop playsinline></video>';document.body.classList.add("hasf")}
 else{pv.appendChild(h("div","big","♪"));var a=h("audio");a.src=u;a.controls=true;a.style.marginTop="12px";pv.appendChild(a);document.body.classList.remove("hasf")}}
@@ -251,7 +422,17 @@ function show(data,k,note,rec){LAST_RES={data:data,k:k,name:$("rn").textContent}
 Object.keys(data).forEach(function(key){var v=data[key];if(v===""||v==null)return;var s=h("div","sec");s.appendChild(h("h3",0,key));s.appendChild(render(v));rs.appendChild(s)});
 var p=h("details","pr");p.appendChild(h("summary",0,"Использованный промпт"));p.appendChild(h("pre",0,M[k].p));rs.appendChild(p);
 var a=h("div","a");[["Скопировать",function(){navigator.clipboard.writeText(JSON.stringify(data,null,2))}],["Скачать .json",function(){var l=h("a");l.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}));l.download="результат.json";l.click()}]].forEach(function(x){var b=h("button","pill g",x[0]);b.onclick=x[1];a.appendChild(b)});
-if(!rec&&!($("rn").textContent||"").endsWith("— пример")){var sb=h("button","pill","Сохранить в каталог");sb.style.flex="1 1 100%";sb.onclick=function(){saveToCat(data,k,$("rn").textContent,sb)};a.appendChild(sb)}
+if(!rec&&!($("rn").textContent||"").endsWith("— пример")){
+  var box=h("div","savebox");
+  var z0=data["Запись каталога"]||{},prs0=data["Персоны"]||[];
+  var detP=(z0["Персоналии"]&&z0["Персоналии"]!=="Не установлено"?z0["Персоналии"]:"")||(Array.isArray(prs0)&&prs0[0]&&prs0[0]["Имя"]&&prs0[0]["Имя"]!=="Не установлено"?prs0[0]["Имя"]:"")||"";
+  var inp=h("input");inp.id="cat_person_inp";inp.placeholder="Имя папки / персоны (напр. Андрей Белый)";inp.value=detP;inp.setAttribute("list","cat_folders_list");
+  var dl=h("datalist");dl.id="cat_folders_list";
+  (typeof getUFolders==="function"?getUFolders():[]).forEach(function(fl){var o=h("option");o.value=fl.name;dl.appendChild(o)});
+  var sb=h("button","pill","Сохранить в папку и каталог");
+  sb.onclick=function(){saveToCat(data,k,$("rn").textContent,sb,inp.value)};
+  box.appendChild(inp);box.appendChild(dl);box.appendChild(sb);a.appendChild(box);
+}
 $("pv").appendChild(a)}
 function fullCard(x){var id=x.f||x.g,c=h("div","sec");
 c.appendChild(h("h3",0,"Оригинал документа"));
@@ -389,44 +570,390 @@ var cs=$("csrc"),cur=cs.value;cs.innerHTML='<option value="">Все части �
 var srcs=[];CAT.forEach(function(x){if(x.src&&srcs.indexOf(x.src)<0)srcs.push(x.src)});
 srcs.forEach(function(s){var o=h("option",0,s);o.value=s;cs.appendChild(o)});cs.value=cur;
 }
-function saveToCat(data,k,fname,btn){
-var z=data["Запись каталога"]||{};
-var prs=data["Персоны"]||[];
-var pName=(z["Персоналии"]&&z["Персоналии"]!=="Не установлено"?z["Персоналии"]:"")||(Array.isArray(prs)&&prs[0]&&prs[0]["Имя"]&&prs[0]["Имя"]!=="Не установлено"?prs[0]["Имя"]:"")||"Персона не установлена";
-var title=(z["Название"]||data["Название"]||fname||"Без названия")+(z["Описание"]?" — "+z["Описание"]:(data["Краткое содержание"]?" — "+data["Краткое содержание"]:""));
-var dateStr=z["Дата"]||(data["Датировка"]&&data["Датировка"]["Диапазон"])||(data["Датировка"]&&data["Датировка"]["Оригинал"])||"Не установлено";
-var code=z["Шифр"]||"Не установлено";
-var kw=Array.isArray(data["Ключевые слова"])?data["Ключевые слова"].join(", "):"";
-var item={
-  id:"u_"+Date.now().toString(36),
-  src:"Добавлено пользователем (ИИ)",
-  person:String(pName).trim(),
-  role:kw?("Ключевые слова: "+kw):"",
-  type:M[k].n,
-  raw_type:M[k].n,
-  title:String(title).trim(),
-  date:String(dateStr).trim(),
-  place:"",
-  author:"",
-  archive:"Загружено через сайт ("+fname+")",
-  code:String(code).trim(),
-  url:"",
-  rights:"",
-  note:kw?("Ключевые слова: "+kw):"",
-  aiData:data
-};
-var ucat=getUCat();ucat.unshift(item);setUCat(ucat);
-CAT.unshift(item);
-CAT.sort(function(a,b){return a.person.toLowerCase().replace(/ё/g,"е").localeCompare(b.person.toLowerCase().replace(/ё/g,"е"),"ru")});
-refreshCatStats();
-btn.textContent="Сохранено в каталог ✓ (Открыть каталог)";
-btn.onclick=function(){openCat()};
+
+/* === INDEXEDDB ДЛЯ МЕДИАФАЙЛОВ (ФОТО, АУДИО, ВИДЕО) === */
+var mediaDB=(function(){
+  var dbp=null;
+  function openDB(){
+    if(dbp)return dbp;
+    dbp=new Promise(function(res,rej){
+      if(!window.indexedDB){res(null);return}
+      var req=indexedDB.open("arkhiv_media_v1",1);
+      req.onupgradeneeded=function(e){var db=e.target.result;if(!db.objectStoreNames.contains("blobs"))db.createObjectStore("blobs")};
+      req.onsuccess=function(e){res(e.target.result)};
+      req.onerror=function(){res(null)};
+    });
+    return dbp;
+  }
+  return {
+    put:function(id,blob){
+      return openDB().then(function(db){
+        if(!db||!blob)return false;
+        return new Promise(function(res){
+          var tx=db.transaction("blobs","readwrite");
+          tx.objectStore("blobs").put(blob,id);
+          tx.oncomplete=function(){res(true)};
+          tx.onerror=function(){res(false)};
+        });
+      });
+    },
+    get:function(id){
+      return openDB().then(function(db){
+        if(!db||!id)return null;
+        return new Promise(function(res){
+          var tx=db.transaction("blobs","readonly");
+          var rq=tx.objectStore("blobs").get(id);
+          rq.onsuccess=function(){res(rq.result||null)};
+          rq.onerror=function(){res(null)};
+        });
+      });
+    },
+    del:function(id){
+      return openDB().then(function(db){
+        if(!db||!id)return;
+        var tx=db.transaction("blobs","readwrite");
+        tx.objectStore("blobs").delete(id);
+      });
+    }
+  };
+})();
+
+function getUFolders(){try{return JSON.parse(localStorage.getItem("arkhiv_user_folders_v1")||"[]")}catch(e){return[]}}
+function setUFolders(arr){try{localStorage.setItem("arkhiv_user_folders_v1",JSON.stringify(arr))}catch(e){}}
+function normFolderKey(s){return String(s||"").toLowerCase().replace(/ё/g,"е").replace(/\([^)]*\)/g,"").replace(/[^а-яa-z0-9]+/gi," ").trim().split(/\s+/).sort().join(" ")}
+
+function openAiRecord(x){
+  var mk=x.type==="Аудио"?"audio":x.type==="Видео"?"video":"photo";
+  document.body.dataset.mode=mk;head(mk,(x.person||"Документ")+" — карточка из каталога");
+  var pv=$("pv");pv.innerHTML="";
+  if(x.mediaId){
+    pv.appendChild(h("div","t","Загрузка файла из хранилища…"));
+    mediaDB.get(x.mediaId).then(function(blob){
+      pv.innerHTML="";
+      if(blob){
+        var u=URL.createObjectURL(blob);
+        if(mk==="photo"){var im=h("img");im.src=u;pv.appendChild(im);$("bf").innerHTML='<img src="'+u+'" alt="">';document.body.classList.add("hasf")}
+        else if(mk==="video"){var v=h("video");v.src=u;v.controls=true;pv.appendChild(v);$("bf").innerHTML='<video src="'+u+'" autoplay muted loop playsinline></video>';document.body.classList.add("hasf")}
+        else{pv.appendChild(h("div","big","♪"));var au=h("audio");au.src=u;au.controls=true;au.style.marginTop="12px";pv.appendChild(au)}
+      }else{
+        pv.appendChild(h("div","big",mk==="audio"?"♪":(x.person||"АР").slice(0,2).toUpperCase()));
+      }
+      pv.appendChild(h("div","t","Запись каталога, добавленная после анализа ИИ."));
+      show(x.aiData,mk,"Карточка документа из каталога.",true);
+    });
+  }else{
+    pv.appendChild(h("div","big",mk==="audio"?"♪":(x.person||"АР").slice(0,2).toUpperCase()));
+    pv.appendChild(h("div","t","Запись каталога, добавленная после анализа ИИ."));
+    view("result");
+    show(x.aiData,mk,"Карточка документа из каталога.",true);
+    return;
+  }
+  view("result");
 }
+
+function saveToCat(data,k,fname,btn,customPerson){
+  var z=data["Запись каталога"]||{};
+  var prs=data["Персоны"]||[];
+  var pName=(customPerson&&customPerson.trim())||(z["Персоналии"]&&z["Персоналии"]!=="Не установлено"?z["Персоналии"]:"")||(Array.isArray(prs)&&prs[0]&&prs[0]["Имя"]&&prs[0]["Имя"]!=="Не установлено"?prs[0]["Имя"]:"")||"Персона не установлена";
+  pName=String(pName).trim();
+  var titleOnly=(z["Название"]||data["Название"]||fname||"Без названия");
+  var descOnly=z["Описание"]||data["Краткое содержание"]||data["Композиция"]||"";
+  var title=titleOnly+(descOnly?" — "+descOnly:"");
+  var dateStr=z["Дата"]||(data["Датировка"]&&data["Датировка"]["Диапазон"])||(data["Датировка"]&&data["Датировка"]["Оригинал"])||"Не установлено";
+  var dateNote=(data["Датировка"]&&data["Датировка"]["Обоснование"])||"";
+  var code=z["Шифр"]||"Не установлено";
+  var kw=Array.isArray(data["Ключевые слова"])?data["Ключевые слова"].join(", "):"";
+  var docId="u_"+Date.now().toString(36);
+  var mediaId=LAST_UPLOADED_FILE?("m_"+docId):"";
+
+  var finishSave=function(){
+    var item={
+      id:docId,mediaId:mediaId,src:"Добавлено пользователем (ИИ)",person:pName,role:kw?("Ключевые слова: "+kw):"",
+      type:M[k].n,raw_type:M[k].n,title:String(title).trim(),date:String(dateStr).trim(),place:"",author:"",
+      archive:"Загружено через сайт ("+fname+")",code:String(code).trim(),url:"",rights:"",note:kw?("Ключевые слова: "+kw):"",aiData:data
+    };
+    var ucat=getUCat();ucat.unshift(item);setUCat(ucat);
+    CAT.unshift(item);
+    CAT.sort(function(a,b){return a.person.toLowerCase().replace(/ё/g,"е").localeCompare(b.person.toLowerCase().replace(/ё/g,"е"),"ru")});
+    refreshCatStats();
+
+    var folders=getUFolders();
+    var nk=normFolderKey(pName);
+    var fld=folders.find(function(f){return normFolderKey(f.name)===nk||f.name.toLowerCase()===pName.toLowerCase()});
+    var colors=["red","yellow","blue","green","purple"];
+    if(!fld){
+      fld={slug:"f_"+Date.now().toString(36),name:pName,color:colors[folders.length%colors.length],docs:[]};
+      folders.push(fld);
+    }
+    var docObj={
+      id:docId,mediaId:mediaId,kind:k,type:k==="photo"?"Фотография":k==="audio"?"Аудиозапись":"Видеозапись",
+      title:String(titleOnly).trim(),desc:String(descOnly).trim(),date:String(dateStr).trim(),
+      fileName:fname,code:String(code).trim(),kw:kw,dateNote:dateNote,aiData:data
+    };
+    fld.docs.push(docObj);
+    setUFolders(folders);
+    updateFoldersBadge();
+
+    btn.textContent="Открыть папку «"+fld.name+"» →";
+    btn.onclick=function(){openFolders(fld.slug)};
+  };
+
+  if(LAST_UPLOADED_FILE&&mediaId){
+    btn.disabled=true;btn.textContent="Сохраняю файл…";
+    mediaDB.put(mediaId,LAST_UPLOADED_FILE).then(function(){btn.disabled=false;finishSave()});
+  }else{
+    finishSave();
+  }
+}
+
 (function(){var ucat=getUCat();if(ucat.length){CAT=ucat.concat(CAT);CAT.sort(function(a,b){return a.person.toLowerCase().replace(/ё/g,"е").localeCompare(b.person.toLowerCase().replace(/ё/g,"е"),"ru")})}})();
+
+/* === РЕНДЕР ПАПОК КАТАЛОГА (CABINET + DOSSIER) === */
+var FPAL={red:{bg:"#d92d17",on:"#fffaf2"},yellow:{bg:"#f2c230",on:"#17150f"},blue:{bg:"#1445d4",on:"#fffaf2"},green:{bg:"#0d825a",on:"#fffaf2"},purple:{bg:"#612485",on:"#fffaf2"}};
+var F_FLARE='<svg class="fl" viewBox="0 0 40 44" preserveAspectRatio="none" aria-hidden="true"><path d="M0 44C8 44 12 40 15.5 31L21.5 13C25 4 30 0 40 0V44Z"/></svg>';
+var F_FLARE_R=F_FLARE.replace('class="fl"','class="fl fl-r"');
+var F_CLIP='<svg class="clip" viewBox="0 0 26 92" aria-hidden="true"><path d="M19 30V72a7.5 7.5 0 0 1-15 0V16a11 11 0 0 1 22 0v54" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" transform="translate(-1 2)"/></svg>';
+var F_PLAY='<svg class="ic-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>';
+var F_PAUSE='<svg class="ic-pause" viewBox="0 0 24 24"><path d="M7 5h3.6v14H7zM13.4 5H17v14h-3.6z" fill="currentColor"/></svg>';
+var F_CHEV='<svg class="chev" viewBox="0 0 12 12"><path d="M2.5 4.2 6 7.8l3.5-3.6" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>';
+function fEsc(s){return String(s||"").replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function fReelSVG(){
+  var win=[0,120,240].map(function(a){
+    var p=function(r,d){var t=(a+d-90)*Math.PI/180;return(100+r*Math.cos(t)).toFixed(1)+" "+(100+r*Math.sin(t)).toFixed(1)};
+    return '<path d="M'+p(42,-34)+'A42 42 0 0 1 '+p(42,34)+'L'+p(84,40)+'A84 84 0 0 0 '+p(84,-40)+'Z"/>';
+  }).join("");
+  return '<svg class="reel-svg" viewBox="0 0 200 200"><defs><mask id="rwf"><rect width="200" height="200" fill="#fff"/><g fill="#000" stroke="#000" stroke-width="9" stroke-linejoin="round">'+win+'</g></mask></defs><circle cx="100" cy="100" r="91" fill="#17130f"/><g fill="none" stroke="#3a2f25" stroke-width=".7"><circle cx="100" cy="100" r="83"/><circle cx="100" cy="100" r="74"/><circle cx="100" cy="100" r="66"/><circle cx="100" cy="100" r="57"/></g><circle cx="100" cy="100" r="99" fill="#efe7d6" mask="url(#rwf)"/><circle cx="100" cy="100" r="99" fill="none" stroke="rgba(0,0,0,.28)" stroke-width="1"/><g fill="rgba(0,0,0,.3)"><circle cx="100" cy="64" r="2.6"/><circle cx="131.2" cy="118" r="2.6"/><circle cx="68.8" cy="118" r="2.6"/></g></svg>';
+}
+
+var fAudio=null,fActivePl=null,fBlobUrls=[];
+function fStopAudio(){if(fAudio){fAudio.pause();fAudio.removeAttribute("src");fAudio.load()}if(fActivePl){fActivePl.classList.remove("is-on");var r=fActivePl.closest(".reel");if(r)r.classList.remove("is-on")}fActivePl=null}
+function fClearBlobs(){fBlobUrls.forEach(function(u){try{URL.revokeObjectURL(u)}catch(e){}});fBlobUrls=[]}
+function fFmt(t){t=Math.max(0,Math.floor(t||0));return Math.floor(t/60).toString().padStart(2,"0")+":"+(t%60).toString().padStart(2,"0")}
+
+function buildCorpusDemoFolders(){
+  var byP={};
+  EX.forEach(function(x){
+    var nm=x.t.split(",")[0].trim();
+    if(!byP[nm])byP[nm]={slug:"ex_"+nm,name:nm,color:x.m==="audio"?"blue":x.m==="video"?"green":"red",isDemo:true,docs:[]};
+    byP[nm].docs.push({
+      id:"ex_"+x.f,kind:x.m,type:x.m==="photo"?"Фотография":x.m==="audio"?"Аудиозапись":"Видеозапись",
+      title:x.t,desc:x.s,date:x.s,fileName:x.t,code:"Пример корпуса",kw:"",aiData:x.res,driveId:x.f,thumbUrl:x.m==="photo"?("https://lh3.googleusercontent.com/d/"+x.f+"=w900"):""
+    });
+  });
+  return Object.values(byP);
+}
+
+function updateFoldersBadge(){
+  var uf=getUFolders();
+  var b=$("tofold");
+  if(b)b.textContent="Папки персон"+(uf.length?" ("+uf.length+")":"");
+}
+updateFoldersBadge();
+
+function openFolders(slug){
+  document.body.removeAttribute("data-mode");
+  document.body.classList.remove("hasf");
+  fStopAudio();
+  view("folders");
+  renderFolders(slug||"");
+}
+
+function renderFolders(activeSlug){
+  fStopAudio();fClearBlobs();
+  var app=$("fapp"),uf=getUFolders(),df=buildCorpusDemoFolders();
+  var all=uf.concat(df);
+
+  if(!activeSlug){
+    $("fname").textContent="Папки персон · сохранённые материалы ИИ и примеры корпуса";
+    var groups=[];
+    if(uf.length){
+      for(var i=0;i<uf.length;i+=4){
+        groups.push({id:"u_"+i,title:i===0?"Добавлено пользователем (ИИ)":"Добавлено пользователем (продолжение)",color:["red","yellow","blue","green","purple"][(i/4)%5],desc:"Папки, сформированные из ваших загрузок. Фото, аудио и видео одного человека автоматически собираются в общую папку.",folders:uf.slice(i,i+4)});
+      }
+    }
+    groups.push({id:"demo",title:"Примеры из корпуса",color:uf.length?"purple":"blue",desc:"Эталонные карточки корпуса (В. Вишневский, Ф. Шаляпин, Д. Шостакович, С. Есенин, А. Тарковский, И. Смоктуновский). Загрузите файл на главной и нажмите «Сохранить в папку и каталог», чтобы добавить свою папку.",folders:df});
+
+    var cabHtml=groups.map(function(g,gi){
+      var pal=FPAL[g.color]||FPAL.red;
+      var isLast=gi===groups.length-1;
+      var tabs=g.folders.map(function(fl){
+        var fp=FPAL[fl.color]||FPAL.red;
+        return '<button class="tab" type="button" data-slug="'+fEsc(fl.slug)+'" style="--c:'+fp.bg+';--on:'+fp.on+'">'+F_FLARE+'<span>'+fEsc(fl.name)+' ('+fl.docs.length+')</span>'+F_FLARE_R+'</button>';
+      }).join("");
+      var totalDocs=g.folders.reduce(function(s,fl){return s+fl.docs.length},0);
+      return '<section class="folder'+(gi===0?' is-open':'')+'" style="--c:'+pal.bg+';--on:'+pal.on+'">'+
+        '<div class="tabs">'+tabs+'</div>'+
+        '<div class="band"><button class="band-btn" type="button"><span>'+fEsc(g.title)+'</span>'+F_CHEV+'</button>'+
+        '<div class="band-body"><div class="band-in"><p class="band-desc">'+fEsc(g.desc)+'</p><p class="band-stats">'+g.folders.length+' папок · '+totalDocs+' документов</p></div></div></div></section>';
+    }).join("");
+
+    app.innerHTML='<div class="fcab-head"><h1 class="fcab-title">Папки каталога</h1><p class="fcab-sub">'+(uf.length?'Нажмите на вкладку персоны, чтобы открыть её папку с фотографиями, аудиозаписями и видео.':'Пока не добавлено ни одной папки. Загрузите фото, аудио или видео на главной странице и сохраните в каталог — здесь появится папка персоны.')+'</p></div><div class="cab">'+cabHtml+'</div>';
+
+    app.querySelectorAll(".tab").forEach(function(t){t.onclick=function(){renderFolders(t.dataset.slug)}});
+    app.querySelectorAll(".band-btn").forEach(function(b){b.onclick=function(){
+      var sec=b.closest(".folder"),op=!sec.classList.contains("is-open");
+      app.querySelectorAll(".folder").forEach(function(x){x.classList.remove("is-open")});
+      if(op)sec.classList.add("is-open");
+    }});
+    return;
+  }
+
+  var fld=all.find(function(f){return f.slug===activeSlug});
+  if(!fld){renderFolders("");return}
+  var pal=FPAL[fld.color]||FPAL.red;
+  $("fname").textContent=fld.name+" — папка документов";
+
+  var sibsHtml=all.map(function(x){
+    var fp=FPAL[x.color]||FPAL.red;
+    return '<button class="tab'+(x.slug===fld.slug?' is-cur':'')+'" type="button" data-slug="'+fEsc(x.slug)+'" style="--c:'+fp.bg+';--on:'+fp.on+'">'+F_FLARE+'<span>'+fEsc(x.name)+'</span>'+F_FLARE_R+'</button>';
+  }).join("");
+
+  var firstPhoto=fld.docs.find(function(d){return d.kind==="photo"});
+  var invHtml=fld.docs.map(function(d,i){
+    var num=String(i+1).padStart(2,"0");
+    return '<li><button type="button" data-goto="fdoc_'+i+'"><span class="inv-n">'+num+'</span><span class="inv-t"><b>'+fEsc(d.type)+'</b> — '+fEsc(d.title)+'</span><span class="inv-d">'+fEsc(d.date||"")+'</span></button></li>';
+  }).join("");
+
+  var docsHtml=fld.docs.map(function(d,i){
+    var num=String(i+1).padStart(2,"0");
+    var noteCls=d.kind==="audio"?"p":d.kind==="video"?"b":"y";
+    var flip=i%2?" doc--flip":"";
+    var mediaHtml="";
+    if(d.kind==="photo"){
+      if(d.thumbUrl){
+        mediaHtml='<figure class="print"><button class="zoom" type="button" data-zoom-idx="'+i+'"><img src="'+fEsc(d.thumbUrl)+'" alt="'+fEsc(d.title)+'"></button>'+F_CLIP+'</figure>';
+      }else{
+        mediaHtml='<figure class="print"><button class="zoom" type="button" data-zoom-idx="'+i+'"><img data-mid="'+fEsc(d.mediaId||"")+'" alt="'+fEsc(d.title)+'" style="min-height:220px;background:#e2dac9"></button>'+F_CLIP+'</figure>';
+      }
+    }else if(d.kind==="audio"){
+      mediaHtml='<div class="reel">'+fReelSVG()+'<div class="reel-ui"><div class="pl" data-mid="'+fEsc(d.mediaId||"")+'" data-did="'+fEsc(d.driveId||"")+'"><button class="pl-btn" type="button" aria-label="Слушать">'+F_PLAY+F_PAUSE+'</button><div class="pl-bar"><i></i></div><span class="pl-time">00:00</span></div></div></div>';
+    }else{
+      if(d.driveId){
+        mediaHtml='<div class="film"><div class="film-in"><iframe src="https://drive.google.com/file/d/'+fEsc(d.driveId)+'/preview" allow="autoplay; fullscreen"></iframe></div></div>';
+      }else{
+        mediaHtml='<div class="film"><div class="film-in"><video controls playsinline data-mid="'+fEsc(d.mediaId||"")+'"></video></div></div>';
+      }
+    }
+
+    var z=(d.aiData&&d.aiData["Запись каталога"])||{};
+    var rows=[
+      ["Точная дата",d.date||"Не установлено"],
+      ["Действующие лица",z["Персоналии"]||fld.name],
+      ["Формат файла",d.fileName||d.type],
+      ["Архивный шифр / код",d.code||"Не установлено"],
+      ["Ключевые слова",d.kw||""],
+      ["Обоснование датировки",d.dateNote||""]
+    ].filter(function(r){return r[1]&&r[1]!==""}).map(function(r){return '<div class="row"><dt>'+fEsc(r[0])+'</dt><dd>'+fEsc(r[1])+'</dd></div>'}).join("");
+
+    return '<section class="doc doc--'+d.kind+flip+'" id="fdoc_'+i+'">'+
+      '<div class="doc-media">'+mediaHtml+'</div>'+
+      '<div class="note note--'+noteCls+'"><p class="note-k"><b>'+num+'</b> '+fEsc(d.type)+'</p><h2 class="note-t">'+fEsc(d.title)+'</h2>'+(d.desc?'<p class="note-d">'+fEsc(d.desc)+'</p>':'')+'</div>'+
+      '<div class="card"><p class="card-h"><span>Карточка документа</span><span>'+num+'-'+d.kind.toUpperCase()+'</span></p><dl>'+rows+'</dl>'+
+      '<p class="card-links"><button class="fbtn fbtn--ink" type="button" data-open-ai="'+i+'">Полный разбор ИИ</button>'+(!fld.isDemo?'<button class="fbtn fbtn--del" type="button" data-del-doc="'+i+'">Удалить из папки</button>':'')+'</p></div></section>';
+  }).join("");
+
+  var portraitHtml=firstPhoto
+    ?(firstPhoto.thumbUrl?'<figure class="print"><img src="'+fEsc(firstPhoto.thumbUrl)+'" alt="'+fEsc(fld.name)+'">'+F_CLIP+'</figure>':'<figure class="print"><img data-mid="'+fEsc(firstPhoto.mediaId||"")+'" alt="'+fEsc(fld.name)+'">'+F_CLIP+'</figure>')
+    :'<div class="plabel"><span>Папка</span><b>'+fEsc(fld.name.slice(0,2).toUpperCase())+'</b><span>'+fEsc(fld.name)+'</span></div>';
+
+  var countsTxt=[
+    fld.docs.filter(function(d){return d.kind==="photo"}).length+" фото",
+    fld.docs.filter(function(d){return d.kind==="audio"}).length+" аудио",
+    fld.docs.filter(function(d){return d.kind==="video"}).length+" видео"
+  ].join(" · ");
+
+  app.innerHTML='<article class="dos" data-c="'+fEsc(fld.color)+'" style="--c:'+pal.bg+';--on:'+pal.on+'">'+
+    '<header class="dos-head"><p class="dos-k"><button type="button" id="f_all_btn">← Все папки</button> <span>/</span> '+fEsc(fld.isDemo?'Пример корпуса':'Добавлено пользователем (ИИ)')+'</p><h1 class="dos-title">'+fEsc(fld.name)+'</h1></header>'+
+    '<div class="dos-wrap"><div class="dos-folder"><nav class="dos-tabs">'+sibsHtml+'</nav><div class="dos-body">'+
+    '<section class="sheet sheet--lead"><div class="sheet-side"><div class="portrait">'+portraitHtml+'</div><dl class="facts"><div><dt>Персона:</dt><dd>'+fEsc(fld.name)+'</dd></div><div><dt>В папке:</dt><dd>'+fld.docs.length+' док. ('+countsTxt+')</dd></div></dl></div>'+
+    '<div class="sheet-main"><p class="lead">Персональная папка материалов по персоне «'+fEsc(fld.name)+'». Все загруженные фото, аудио- и видеодокументы собираются здесь в едином оформлении.</p><h2 class="sheet-h">Опись папки</h2><ol class="inv">'+invHtml+'</ol></div></section>'+
+    docsHtml+'</div></div></div></article>';
+
+  $("f_all_btn").onclick=function(){renderFolders("")};
+  app.querySelectorAll(".dos-tabs .tab").forEach(function(t){t.onclick=function(){renderFolders(t.dataset.slug)}});
+  app.querySelectorAll("[data-goto]").forEach(function(b){b.onclick=function(){var el=document.getElementById(b.dataset.goto);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})}});
+
+  // Load blobs from IndexedDB for photos & videos
+  app.querySelectorAll("img[data-mid], video[data-mid]").forEach(function(el){
+    var mid=el.dataset.mid;if(!mid)return;
+    mediaDB.get(mid).then(function(blob){if(blob){var u=URL.createObjectURL(blob);fBlobUrls.push(u);el.src=u}});
+  });
+
+  // Lightbox zoom
+  app.querySelectorAll(".zoom").forEach(function(z){z.onclick=function(){
+    var img=z.querySelector("img");if(!img||!img.src)return;
+    var dlg=document.createElement("dialog");dlg.className="lb-dlg";
+    dlg.innerHTML='<button class="lb-x" type="button">Закрыть ✕</button><figure><img src="'+fEsc(img.src)+'" alt=""></figure>';
+    document.body.appendChild(dlg);
+    dlg.querySelector(".lb-x").onclick=function(){dlg.close();dlg.remove()};
+    dlg.onclick=function(e){if(e.target===dlg){dlg.close();dlg.remove()}};
+    if(dlg.showModal)dlg.showModal();else dlg.setAttribute("open","");
+  }});
+
+  // Reel-to-reel audio player
+  app.querySelectorAll(".pl-btn").forEach(function(pb){pb.onclick=function(){
+    var pl=pb.closest(".pl"),mid=pl.dataset.mid,did=pl.dataset.did;
+    if(!fAudio){
+      fAudio=new Audio();
+      fAudio.addEventListener("timeupdate",function(){
+        if(!fActivePl||!isFinite(fAudio.duration))return;
+        var k=fAudio.duration?fAudio.currentTime/fAudio.duration:0;
+        fActivePl.querySelector(".pl-bar i").style.width=(k*100).toFixed(1)+"%";
+        fActivePl.querySelector(".pl-time").textContent=fFmt(fAudio.currentTime)+" / "+fFmt(fAudio.duration);
+      });
+      fAudio.addEventListener("playing",function(){if(fActivePl){fActivePl.classList.add("is-on");var r=fActivePl.closest(".reel");if(r)r.classList.add("is-on")}});
+      fAudio.addEventListener("pause",function(){if(fActivePl){fActivePl.classList.remove("is-on");var r=fActivePl.closest(".reel");if(r)r.classList.remove("is-on")}});
+      fAudio.addEventListener("ended",function(){if(fActivePl){fActivePl.classList.remove("is-on");var r=fActivePl.closest(".reel");if(r)r.classList.remove("is-on")}});
+    }
+    if(fActivePl===pl){fAudio.paused?fAudio.play().catch(function(){}):fAudio.pause();return}
+    fStopAudio();
+    fActivePl=pl;
+    pl.querySelector(".pl-time").textContent="загрузка…";
+    if(mid){
+      mediaDB.get(mid).then(function(blob){
+        if(blob){var u=URL.createObjectURL(blob);fBlobUrls.push(u);fAudio.src=u;fAudio.play().catch(function(){})}
+        else{pl.querySelector(".pl-time").textContent="файл не найден"}
+      });
+    }else if(did){
+      fAudio.src="https://drive.google.com/uc?export=download&id="+did;
+      fAudio.play().catch(function(){pl.querySelector(".pl-time").textContent="откройте на Диске"});
+    }
+  }});
+  app.querySelectorAll(".pl-bar").forEach(function(bar){bar.onclick=function(e){
+    var pl=bar.closest(".pl");if(pl!==fActivePl||!fAudio||!isFinite(fAudio.duration))return;
+    var r=bar.getBoundingClientRect();
+    fAudio.currentTime=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width))*fAudio.duration;
+  }});
+
+  // Full AI breakdown button
+  app.querySelectorAll("[data-open-ai]").forEach(function(b){b.onclick=function(){
+    var d=fld.docs[+b.dataset.openAi];if(!d||!d.aiData)return;
+    openAiRecord({type:d.kind==="audio"?"Аудио":d.kind==="video"?"Видео":"Фото",person:fld.name,mediaId:d.mediaId,aiData:d.aiData});
+  }});
+
+  // Delete document from folder
+  app.querySelectorAll("[data-del-doc]").forEach(function(b){b.onclick=function(){
+    var idx=+b.dataset.delDoc;
+    var folders=getUFolders();
+    var target=folders.find(function(f){return f.slug===fld.slug});
+    if(!target)return;
+    var removed=target.docs.splice(idx,1)[0];
+    if(removed&&removed.mediaId)mediaDB.del(removed.mediaId);
+    if(!target.docs.length)folders=folders.filter(function(f){return f.slug!==fld.slug});
+    setUFolders(folders);
+    if(removed){
+      var ucat=getUCat().filter(function(c){return c.id!==removed.id});setUCat(ucat);
+      CAT=CAT.filter(function(c){return c.id!==removed.id});refreshCatStats();
+    }
+    updateFoldersBadge();
+    renderFolders(target.docs.length?fld.slug:"");
+  }});
+}
+
 var CF={type:"",q:"",src:""};
 function openCat(){document.body.removeAttribute("data-mode");document.body.classList.remove("hasf");view("catalog");renderCat()}
 function openMeth(){document.body.removeAttribute("data-mode");document.body.classList.remove("hasf");view("method");renderMeth()}
-$("tocat").onclick=openCat;$("tometh").onclick=openMeth;
+$("tofold").onclick=function(){openFolders("")};$("fback").onclick=function(){fStopAudio();view("home")};$("c2fold").onclick=function(){openFolders("")};$("tocat").onclick=openCat;$("tometh").onclick=openMeth;
 $("cback").onclick=function(){view("home")};$("mback").onclick=function(){view("home")};
 (function(){
 refreshCatStats();
@@ -439,7 +966,7 @@ $("ccsv").onclick=function(){var esc=function(v){return'"'+String(v||"").replace
 function renderCat(){var list=CAT.filter(function(x){if(CF.type&&x.type!==CF.type)return false;if(CF.src&&x.src!==CF.src)return false;if(CF.q){var s=(x.person+" "+x.title+" "+x.archive+" "+x.code+" "+x.date).toLowerCase();if(s.indexOf(CF.q)<0)return false}return true});
 $("ccnt").textContent="Показано документов: "+list.length+" из "+CAT.length;
 var t=$("ctbl");t.innerHTML="";var tr=h("tr");["№","Тип","Персона","Название / Описание","Дата","Источник / Шифр"].forEach(function(z){tr.appendChild(h("th",0,z))});t.appendChild(tr);
-list.forEach(function(x,i){var q=h("tr");q.appendChild(h("td",0,i+1));var tdT=h("td");tdT.appendChild(h("span","tag "+x.type,x.type));q.appendChild(tdT);q.appendChild(h("td",0,x.person||"—"));q.appendChild(h("td",0,x.title||"—"));q.appendChild(h("td",0,x.date||"—"));var tdS=h("td");if(x.url&&/^https?:\/\//i.test(x.url)){var a=h("a",0,(x.archive||"Источник")+(x.code?" · "+x.code:""));a.href=x.url;a.target="_blank";a.rel="noopener";a.style.color="var(--ac)";tdS.appendChild(a)}else{tdS.textContent=(x.archive||"—")+(x.code?" · "+x.code:"")}if(x.aiData){var bOpen=h("button","pill g","Открыть карточку");bOpen.style.cssText="padding:4px 10px;font-size:10px;margin-top:4px;display:block";bOpen.onclick=function(){var mk=x.type==="Аудио"?"audio":x.type==="Видео"?"video":"photo";document.body.dataset.mode=mk;head(mk,x.person+" — карточка из каталога");$("pv").appendChild(h("div","big",x.type==="Аудио"?"♪":x.person.slice(0,2).toUpperCase()));$("pv").appendChild(h("div","t","Запись каталога, добавленная после анализа ИИ."));view("result");show(x.aiData,mk,"Карточка документа из каталога.",{id:x.id})};tdS.appendChild(bOpen)}
+list.forEach(function(x,i){var q=h("tr");q.appendChild(h("td",0,i+1));var tdT=h("td");tdT.appendChild(h("span","tag "+x.type,x.type));q.appendChild(tdT);q.appendChild(h("td",0,x.person||"—"));q.appendChild(h("td",0,x.title||"—"));q.appendChild(h("td",0,x.date||"—"));var tdS=h("td");if(x.url&&/^https?:\/\//i.test(x.url)){var a=h("a",0,(x.archive||"Источник")+(x.code?" · "+x.code:""));a.href=x.url;a.target="_blank";a.rel="noopener";a.style.color="var(--ac)";tdS.appendChild(a)}else{tdS.textContent=(x.archive||"—")+(x.code?" · "+x.code:"")}if(x.aiData){var bOpen=h("button","pill g","Открыть карточку");bOpen.style.cssText="padding:4px 10px;font-size:10px;margin-top:4px;display:block";bOpen.onclick=function(){openAiRecord(x)};tdS.appendChild(bOpen)}
 q.appendChild(tdS);t.appendChild(q)});}
 function renderMeth(){var box=$("mprompts");if(box.childElementCount)return;["photo","audio","video"].forEach(function(k){var d=h("div","xs");d.style.marginBottom="16px";var hd=h("div");hd.style.cssText="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px";hd.appendChild(h("strong",0,M[k].n+" — "+M[k].c));var cp=h("button","pill g","Копировать промпт");cp.style.cssText="padding:5px 12px;font-size:10px";cp.onclick=function(){if(navigator.clipboard)navigator.clipboard.writeText(M[k].p);cp.textContent="Скопировано"};hd.appendChild(cp);d.appendChild(hd);var pre=h("pre",0,M[k].p);pre.style.cssText="white-space:pre-wrap;font:12.5px/1.45 ui-monospace,Menlo,monospace;background:var(--paper);padding:12px;margin:0;border:1px solid var(--paper2)";d.appendChild(pre);box.appendChild(d)})}
 
