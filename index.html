@@ -732,12 +732,15 @@ function fFmt(t){t=Math.max(0,Math.floor(t||0));return Math.floor(t/60).toString
 
 function buildCorpusDemoFolders(){
   var byP={};
-  EX.forEach(function(x){
+  (typeof X!=="undefined"?X:[]).forEach(function(x){
+    var did=x.f||x.g||"";
     var nm=x.t.split(",")[0].trim();
+    var dt=(x.d&&x.d["Датировка"]&&x.d["Датировка"]["Диапазон"])||(x.d&&x.d["Запись каталога"]&&x.d["Запись каталога"]["Дата"])||"";
+    var desc=(x.d&&x.d["Что это"])||(x.d&&x.d["Краткое содержание"])||"";
     if(!byP[nm])byP[nm]={slug:"ex_"+nm,name:nm,color:x.m==="audio"?"blue":x.m==="video"?"green":"red",isDemo:true,docs:[]};
     byP[nm].docs.push({
-      id:"ex_"+x.f,kind:x.m,type:x.m==="photo"?"Фотография":x.m==="audio"?"Аудиозапись":"Видеозапись",
-      title:x.t,desc:x.s,date:x.s,fileName:x.t,code:"Пример корпуса",kw:"",aiData:x.res,driveId:x.f,thumbUrl:x.m==="photo"?("https://lh3.googleusercontent.com/d/"+x.f+"=w900"):""
+      id:"ex_"+did,kind:x.m,type:x.m==="photo"?"Фотография":x.m==="audio"?"Аудиозапись":"Видеозапись",
+      title:x.t,desc:desc,date:dt,fileName:x.t,code:"Пример корпуса",kw:"",aiData:x.d||{},driveId:did,thumbUrl:x.m==="photo"?("https://lh3.googleusercontent.com/d/"+did+"=w900"):""
     });
   });
   return Object.values(byP);
