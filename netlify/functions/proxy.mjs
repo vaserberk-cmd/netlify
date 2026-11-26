@@ -1,7 +1,7 @@
 const CORS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, X-Mime, X-Name, X-Model",
+  "Access-Control-Allow-Headers": "Content-Type, X-Mime, X-Name, X-Model, Range",
 };
 
 function json(data, status = 200) {
@@ -26,6 +26,30 @@ export default async (request) => {
   try {
     if (path === "/" && request.method === "GET") {
       return json({ ok: true });
+    }
+
+    if (path === "/drive-media" && request.method === "GET") {
+      const id = url.searchParams.get("id") || "";
+      if (!/^[A-Za-z0-9_-]{10,80}$/.test(id)) {
+        return json({ error: { message: "Некорректный идентификатор файла" } }, 400);
+      }
+      const target = `https://drive.usercontent.google.com/download?id=${encodeURIComponent(id)}&export=download&confirm=t`;
+      const hdrs = {};
+      const range = request.headers.get("range");
+      if (range) hdrs["Range"] = range;
+      const r = await fetch(target, { headers: hdrs, redirect: "follow" });
+      if (!r.ok && r.status !== 206) {
+        return json({ error: { message: "Не удалось получить медиафайл с Диска" } }, r.status);
+      }
+      const outHeaders = new Headers(CORS);
+      for (const h of ["content-type", "content-length", "content-range", "accept-ranges"]) {
+        const v = r.headers.get(h);
+        if (v) outHeaders.set(h, v);
+      }
+      if (!outHeaders.get("content-type") || outHeaders.get("content-type").includes("octet-stream")) {
+        outHeaders.set("content-type", "audio/mpeg");
+      }
+      return new Response(r.body, { status: r.status, headers: outHeaders });
     }
 
     if (path === "/generate" && request.method === "POST") {
